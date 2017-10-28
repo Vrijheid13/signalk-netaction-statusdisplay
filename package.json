@@ -1,0 +1,24 @@
+{
+  "name": "signalk-netaction-statusdisplay",
+  "version": "0.1.0",
+  "description": "Netaction's web app that visualizes boat speed, AIS, wind and other values",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netAction/signalk-netaction-statusdisplay.git"
+  },
+  "keywords": [
+    "signalk-webapp"
+  ],
+  "author": "Thomas Schmidt (netAction)",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/netAction/signalk-netaction-statusdisplay/issues"
+  },
+  "homepage": "https://github.com/netAction/signalk-netaction-statusdisplay#readme",
+  "dependencies": {
+  }
+}
