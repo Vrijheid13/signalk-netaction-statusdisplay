@@ -1,6 +1,6 @@
 {
   "name": "signalk-netaction-statusdisplay",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Netaction's web app that visualizes boat speed, AIS, wind and other values",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/netAction/signalk-netaction-statusdisplay#readme",
   "dependencies": {
-    "jquery" : "2.x",
+    "jquery": "2.x",
     "leaflet": "",
     "@signalk/client": ""
   }
