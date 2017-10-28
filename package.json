@@ -1,6 +1,6 @@
 {
   "name": "signalk-netaction-statusdisplay",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Netaction's web app that visualizes boat speed, AIS, wind and other values",
   "main": "index.js",
   "scripts": {
