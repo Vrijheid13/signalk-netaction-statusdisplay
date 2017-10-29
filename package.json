@@ -24,6 +24,7 @@
   "dependencies": {
     "jquery": "2.x",
     "leaflet": "",
-    "@signalk/client": ""
+    "@signalk/client": "",
+    "webpack": "",
   }
 }

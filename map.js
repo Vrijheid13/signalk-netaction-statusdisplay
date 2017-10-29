@@ -1,11 +1,11 @@
 // Mapping file for Webpack
 
 L = require('leaflet');
-L.Icon.Default.imagePath = '/bower_components/leaflet/dist/images/';
+//L.Icon.Default.imagePath = '/bower_components/leaflet/dist/images/';
 
-d3 = require('d3');
+//d3 = require('d3');
 $ = require('jquery');
 
-signalk = require('@signalk/client');
+signalk = require('../@signalk/client');
 
-Qty = require('js-quantities');
+//Qty = require('js-quantities');
