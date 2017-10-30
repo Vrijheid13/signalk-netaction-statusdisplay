@@ -6,6 +6,7 @@ L = require('leaflet');
 //d3 = require('d3');
 $ = require('jquery');
 
-signalk = require('../@signalk/client');
+//signalk = require('../@signalk/client');
+signalk = require('@signalk/client');
 
-//Qty = require('js-quantities');
+Qty = require('js-quantities');

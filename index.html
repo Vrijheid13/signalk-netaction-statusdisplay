@@ -1,1 +1,189 @@
-<h1>Dummy</h1>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Netaction's statusdisplay</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <script src="dist/bundle.js"></script>
+
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#map {
+			width: 600px;
+			height: 400px;
+		}
+	</style>
+
+	<style>body { padding: 0; margin: 0; } #map { height: 100%; width: 100vw; }</style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+  // Look if world coastline map ist locally available and use it
+  var tilemapUrl = false;
+  var tilemapMeta = false;
+  $.ajax({
+    // path of list of maps in Signal K server
+    url: "/signalk/v1/api/resources/charts",
+    async: false,
+    success: function(data) {
+      // Not the data we expected? URL wrong?
+      if (data === null) {
+        console.log("Signal K server not found.")
+        return;
+      }
+      if (typeof data !== 'object') {
+        console.log("Signal K server not found.")
+        return;
+      }
+      // Is the world coastline map installed?
+      if (typeof data['world-coastline.mbtiles'] !== 'undefined') {
+        // this will be "/charts/world-coastline.mbtiles/{z}/{x}/{y}"
+        console.log("Show the world coastline map.")
+        tilemapUrl = data['world-coastline.mbtiles'].tilemapUrl;
+        tilemapMeta = {
+          attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 11,
+          tileSize: 1024,
+          zoomOffset: -2,
+        };
+        return;
+      }
+      // Is any other map installed on Signal K server?
+      if(!$.isEmptyObject(data)) {
+        // Take one map we randomly find in list of maps
+        $.each(data, function(index, firstMap) {
+          console.log("Map used: ", firstMap.identifier);
+          tilemapUrl = firstMap.tilemapUrl;
+          tilemapMeta = {
+            // We don't know the authors of an unknown map
+            attribution: '',
+            maxZoom: firstMap.maxzoom,
+          };
+          // exit each loop
+          return false;
+        });
+        return;
+      }
+    }
+  });
+  // Fallback to Internet tiles
+  if (!tilemapUrl) {
+    tilemapUrl = "http://{s}.tile.osm.org/{z}/{x}/{y}.png";
+    tilemapMeta = {
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 13,
+    };
+  }
+  var map = L.map('map');
+  map.setView([60.1, 24.8], 4);
+  L.tileLayer(tilemapUrl, tilemapMeta).addTo(map);
+
+
+// Strange things
+
+    var targets = {};
+    var selfLocation;
+    selfId = '';
+    var selfSpeed = 0;
+    var client = new signalk.Client(window.location.hostname, window.location.port);
+
+    var log = function (_) { console.log(_)}
+    var connection = client.connectDelta(window.location.host, onSignalK, log, log, log, log, 'all');
+
+    function getId(context) {
+      var result = context.split('[')[1];
+      if (result) {
+        result = result.split(']')[0];
+        if (result) {
+          return result
+        }
+      }
+      return context.split('.')[1];
+    }
+
+    var rad2degrees = Qty.swiftConverter('rad', 'deg');
+
+    function isSelf(id) {
+      return id === selfId || id === 'self'
+    }
+
+    function getShortId(id) {
+      var lastColonIndex = id.lastIndexOf(':');
+      return id.substring(lastColonIndex+1);
+    }
+
+
+    function onSignalK(_) {
+      if (_.context) {
+        var id = getId(_.context)
+        var aisData = targets[id];
+        if (!aisData) {
+          targets[id] = aisData = {
+            id: id,
+            shortId: getShortId(id),
+            show: true
+          };
+          // Fetch name and other background data about a ship
+          $.ajax({
+            url: "http://" + window.location.host + "/signalk/v1/api/vessels/" + id,
+            async: true,
+            success: function(vesselInfo) {
+              aisData.vesselInfo = vesselInfo;
+            }
+          });
+        };
+        _.updates
+          .forEach(function(update) {
+            update.values.forEach(function(value) {
+              aisData.timestamp = new Date().getTime();
+              if (value.path === 'navigation.position') {
+                targets[id].position = new L.LatLng(value.value.latitude, value.value.longitude);
+                if (isSelf(id)) {
+                  selfLocation = targets[id].position;
+                }
+                doDraw = true;
+              };
+              if (value.path === 'navigation.courseOverGroundTrue') {
+                aisData.cog = rad2degrees(value.value);
+                doDraw = true;
+              };
+              if (value.path === 'navigation.speedOverGround') {
+                if (value.value === 0 || typeof value.value === 'undefined') {
+                  aisData.show = false;
+                }
+                aisData.sog = (value.value * 1.94384).toFixed(2);
+                doDraw = true;
+                if (isSelf(id)) {
+                  selfSpeed = (value.value * 1.94384).toFixed(2);
+                }
+              }
+              if (value.path === 'name') {
+                if (!aisData.vesselInfo || !aisData.vesselInfo.name) {
+                  aisData.vesselInfo = {
+                    name: {
+                      value: "-"
+                    }
+                  };
+                }
+                aisData.vesselInfo.name.value = value.value;
+                doDraw = true;
+              };
+            });
+          });
+      };
+    };
+</script>
+
+
+
+</body>
+</html>

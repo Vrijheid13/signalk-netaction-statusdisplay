@@ -13,7 +13,6 @@
     "url": "git+https://github.com/netAction/signalk-netaction-statusdisplay.git"
   },
   "keywords": [
-    "signalk-webapp"
   ],
   "author": "Thomas Schmidt (netAction)",
   "license": "WTFPL",
@@ -25,6 +24,7 @@
     "jquery": "2.x",
     "leaflet": "",
     "@signalk/client": "",
-    "webpack": "",
+    "js-quantities": "",
+    "webpack": ""
   }
 }

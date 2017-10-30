@@ -10,7 +10,7 @@ module.exports = {
   },
   output: {
     path:  path.resolve(__dirname, 'dist'),
-    filename: '[name].js'
+    filename: 'bundle.js'
   },
   module: {
     loaders: [
@@ -22,5 +22,6 @@ module.exports = {
   externals: [
     {'options': "Options"},
     {'tls': "tls"}
-  ]
+  ],
+  externals: ['mdns', 'validator-js', 'ws']
 }
